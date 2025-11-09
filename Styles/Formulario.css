@@ -1,7 +1,3 @@
-/* ========================================
-   CSS ORIGINAL - DISEÑO CON GRADIENTE Y DOS COLUMNAS
-   ======================================== */
-
 * {
     margin: 0;
     padding: 0;
@@ -170,11 +166,6 @@ button:active {
     color: #721c24;
     border: 2px solid #f5c6cb;
 }
-
-/* ========================================
-   ESTILOS PARA TABLAS Y LISTADO
-   ======================================== */
-
 .contenedor-tabla,
 .contenedor-busqueda {
     max-width: 1400px;
@@ -291,11 +282,6 @@ tbody tr:nth-child(even) {
     font-size: 18px;
     font-style: italic;
 }
-
-/* ========================================
-   MODAL PARA EDITAR
-   ======================================== */
-
 .modal {
     display: none;
     position: fixed;
@@ -515,4 +501,5 @@ tbody tr:nth-child(even) {
     th, td {
         padding: 8px 5px;
     }
+
 }
