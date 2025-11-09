@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscar Usuarios</title>
+    <link rel="stylesheet" href="Styles/formulario.css">
+</head>
+<body>
+    <header>
+        <h1 class="Titulo">BUSCAR USUARIOS</h1>
+        <div class="creditos">Diseñado por Juan Camilo Diaz y Natalia Sofia Durango</div>
+        <nav>
+            <a href="index.html">Registro</a>
+            <a href="listado.html">Listado</a>
+            <a href="buscar.html">Buscar</a>
+        </nav>
+    </header>
+
+    <div class="contenedor-busqueda">
+        <form id="formBuscar">
+            <div class="campos">
+                <label for="tipoBusqueda">Buscar por:</label>
+                <select id="tipoBusqueda" name="tipoBusqueda" required>
+                    <option value="">Seleccione...</option>
+                    <option value="cedula">Cédula</option>
+                    <option value="nombre">Nombre</option>
+                    <option value="apellido">Apellido</option>
+                    <option value="email">Email</option>
+                </select>
+            </div>
+
+            <div class="campos">
+                <label for="valorBusqueda">Valor a buscar:</label>
+                <input type="text" id="valorBusqueda" name="valorBusqueda" required placeholder="Ingrese el término de búsqueda">
+            </div>
+
+            <div class="botones">
+                <button type="submit">Buscar</button>
+                <button type="button" id="btnLimpiarBusqueda">Limpiar</button>
+                <button type="button" id="btnMostrarTodos">Mostrar Todos</button>
+            </div>
+        </form>
+
+        <div id="resultadosBusqueda">
+            <h2>Resultados de la búsqueda</h2>
+            <div id="tablaContainer">
+                <table id="tablaResultados">
+                    <thead>
+                        <tr>
+                            <th>Cédula</th>
+                            <th>Nombre</th>
+                            <th>Apellido</th>
+                            <th>Email</th>
+                            <th>Fecha</th>
+                            <th>Teléfono</th>
+                            <th>Sexo</th>
+                            <th>Rol</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cuerpoTabla">
+                    </tbody>
+                </table>
+                <p id="mensajeSinResultados" style="display: none; text-align: center; margin-top: 20px;">
+                    No se encontraron resultados
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalEditar" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Editar Usuario</h2>
+            <form id="formEditar">
+                <input type="hidden" id="editIndex">
+                
+                <div class="campos">
+                    <label for="editCedula">Cédula:</label>
+                    <input type="number" id="editCedula" required>
+                </div>
+
+                <div class="campos">
+                    <label for="editNombre">Nombre:</label>
+                    <input type="text" id="editNombre" required>
+                </div>
+
+                <div class="campos">
+                    <label for="editApellido">Apellido:</label>
+                    <input type="text" id="editApellido" required>
+                </div>
+
+                <div class="campos">
+                    <label for="editEmail">Email:</label>
+                    <input type="email" id="editEmail" required>
+                </div>
+
+                <div class="campos">
+                    <label for="editFecha">Fecha:</label>
+                    <input type="date" id="editFecha">
+                </div>
+
+                <div class="campos">
+                    <label for="editTelefono">Teléfono:</label>
+                    <input type="tel" id="editTelefono" required>
+                </div>
+
+                <div class="campos">
+                    <label for="editGenero">Sexo:</label>
+                    <select id="editGenero" required>
+                        <option value="masculino">Masculino</option>
+                        <option value="femenino">Femenino</option>
+                        <option value="otro">Otro</option>
+                        <option value="n/a">Prefiero no decirlo</option>
+                    </select>
+                </div>
+
+                <div class="campos">
+                    <label for="editRol">Rol:</label>
+                    <select id="editRol" required>
+                        <option value="user">User</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+
+                <div class="botones">
+                    <button type="submit">Guardar Cambios</button>
+                    <button type="button" class="btnCancelar">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="Js/buscar.js"></script>
+</body>
+</html>

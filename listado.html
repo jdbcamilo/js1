@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listado de Usuarios</title>
+    <link rel="stylesheet" href="Styles/formulario.css">
+</head>
+<body>
+    <header>
+        <h1 class="Titulo">LISTADO DE USUARIOS</h1>
+        <div class="creditos">Diseñado por Juan Camilo Diaz y Natalia Sofia Durango</div>
+        <nav>
+            <a href="index.html">Registro</a>
+            <a href="listado.html">Listado</a>
+            <a href="buscar.html">Buscar</a>
+        </nav>
+    </header>
+
+    <div class="contenedor-tabla">
+        <div class="botones">
+            <button id="btnActualizar">Actualizar Listado</button>
+            <button id="btnLimpiarTodo">Limpiar Todos los Datos</button>
+        </div>
+        
+        <div id="tablaContainer">
+            <table id="tablaUsuarios">
+                <thead>
+                    <tr>
+                        <th>Cédula</th>
+                        <th>Nombre</th>
+                        <th>Apellido</th>
+                        <th>Email</th>
+                        <th>Fecha</th>
+                        <th>Teléfono</th>
+                        <th>Sexo</th>
+                        <th>Rol</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="cuerpoTabla">
+                    <!-- Los datos se cargarán aquí dinámicamente -->
+                </tbody>
+            </table>
+            <p id="mensajeSinDatos" style="display: none; text-align: center; margin-top: 20px;">
+                No hay usuarios registrados
+            </p>
+        </div>
+    </div>
+
+    <!-- Modal para editar usuario -->
+    <div id="modalEditar" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Editar Usuario</h2>
+            <form id="formEditar">
+                <input type="hidden" id="editIndex">
+                
+                <div class="campos">
+                    <label for="editCedula">Cédula:</label>
+                    <input type="number" id="editCedula" required>
+                </div>
+
+                <div class="campos">
+                    <label for="editNombre">Nombre:</label>
+                    <input type="text" id="editNombre" required>
+                </div>
+
+                <div class="campos">
+                    <label for="editApellido">Apellido:</label>
+                    <input type="text" id="editApellido" required>
+                </div>
+
+                <div class="campos">
+                    <label for="editEmail">Email:</label>
+                    <input type="email" id="editEmail" required>
+                </div>
+
+                <div class="campos">
+                    <label for="editFecha">Fecha:</label>
+                    <input type="date" id="editFecha">
+                </div>
+
+                <div class="campos">
+                    <label for="editTelefono">Teléfono:</label>
+                    <input type="tel" id="editTelefono" required>
+                </div>
+
+                <div class="campos">
+                    <label for="editGenero">Sexo:</label>
+                    <select id="editGenero" required>
+                        <option value="masculino">Masculino</option>
+                        <option value="femenino">Femenino</option>
+                        <option value="otro">Otro</option>
+                        <option value="n/a">Prefiero no decirlo</option>
+                    </select>
+                </div>
+
+                <div class="campos">
+                    <label for="editRol">Rol:</label>
+                    <select id="editRol" required>
+                        <option value="user">User</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+
+                <div class="botones">
+                    <button type="submit">Guardar Cambios</button>
+                    <button type="button" class="btnCancelar">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="Js/listado.js"></script>
+</body>
+</html>
