@@ -1,14 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
     
-    function obtenerUsuarios() {
-        const usuarios = localStorage.getItem('usuarios');
-        return usuarios ? JSON.parse(usuarios) : [];
-    }
-
-    function guardarUsuarios(usuarios) {
-        localStorage.setItem('usuarios', JSON.stringify(usuarios));
-    }
-
     function limpiarFormulario() {
         document.getElementById('myForm').reset();
         const mensaje = document.getElementById('mensaje');
@@ -30,7 +21,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const myForm = document.getElementById('myForm');
     if (myForm) {
-        myForm.addEventListener('submit', function(e) {
+        myForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const persona = {
@@ -44,22 +35,25 @@ document.addEventListener('DOMContentLoaded', function() {
                 rol: document.getElementById('rol').value
             };
             
-            let usuarios = obtenerUsuarios();
-            
-            const cedulaExiste = usuarios.some(user => user.cedula === persona.cedula);
-            
-            if (cedulaExiste) {
-                mostrarMensaje('❌ Error: La cédula ya está registrada', 'error');
-                return;
+            try {
+                // Verificar si la cédula ya existe
+                const usuarios = await UsuariosAPI.obtenerTodos();
+                const cedulaExiste = usuarios.some(user => user.cedula === persona.cedula);
+                
+                if (cedulaExiste) {
+                    mostrarMensaje('❌ Error: La cédula ya está registrada', 'error');
+                    return;
+                }
+                
+                // Crear el usuario en MockAPI
+                await UsuariosAPI.crear(persona);
+                
+                mostrarMensaje('✅ Usuario guardado exitosamente', 'exito');
+                limpiarFormulario();
+            } catch (error) {
+                mostrarMensaje('❌ Error al guardar el usuario. Por favor, intente nuevamente.', 'error');
+                console.error('Error:', error);
             }
-            
-            usuarios.push(persona);
-            
-            guardarUsuarios(usuarios);
-            
-            mostrarMensaje('✅ Usuario guardado exitosamente', 'exito');
-            
-            limpiarFormulario();
         });
     }
 

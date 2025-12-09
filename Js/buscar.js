@@ -1,38 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     
-    function obtenerUsuarios() {
-        const usuarios = localStorage.getItem('usuarios');
-        return usuarios ? JSON.parse(usuarios) : [];
-    }
-
-    function guardarUsuarios(usuarios) {
-        localStorage.setItem('usuarios', JSON.stringify(usuarios));
-    }
-
-    function buscarUsuarios(tipo, valor) {
-        const usuarios = obtenerUsuarios();
-        
-        const valorBusqueda = valor.toLowerCase().trim();
-        
-        const resultados = usuarios.filter(usuario => {
-            switch(tipo) {
-                case 'cedula':
-                    return usuario.cedula.toString().includes(valorBusqueda);
-                case 'nombre':
-                    return usuario.nombre.toLowerCase().includes(valorBusqueda);
-                case 'apellido':
-                    return usuario.apellido.toLowerCase().includes(valorBusqueda);
-                case 'email':
-                    return usuario.email.toLowerCase().includes(valorBusqueda);
-                default:
-                    return false;
-            }
-        });
-        
-        return resultados;
-    }
-
-    function mostrarResultados(usuarios) {
+    async function mostrarResultados(usuarios) {
         const cuerpoTabla = document.getElementById('cuerpoTabla');
         const mensajeSinResultados = document.getElementById('mensajeSinResultados');
         const tabla = document.getElementById('tablaResultados');
@@ -54,12 +22,6 @@ document.addEventListener('DOMContentLoaded', function() {
         usuarios.forEach((usuario) => {
             const fila = document.createElement('tr');
             
-            const todosUsuarios = obtenerUsuarios();
-            const indiceReal = todosUsuarios.findIndex(u => 
-                u.cedula === usuario.cedula && 
-                u.email === usuario.email
-            );
-            
             fila.innerHTML = `
                 <td>${usuario.cedula}</td>
                 <td>${usuario.nombre}</td>
@@ -70,8 +32,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 <td>${usuario.genero}</td>
                 <td>${usuario.rol}</td>
                 <td class="acciones">
-                    <button class="btnEditar" data-index="${indiceReal}">✏️ Editar</button>
-                    <button class="btnEliminar" data-index="${indiceReal}">🗑️ Eliminar</button>
+                    <button class="btnEditar" data-id="${usuario.id}">✏️ Editar</button>
+                    <button class="btnEliminar" data-id="${usuario.id}">🗑️ Eliminar</button>
                 </td>
             `;
             
@@ -84,58 +46,67 @@ document.addEventListener('DOMContentLoaded', function() {
     function agregarEventListeners() {
         document.querySelectorAll('.btnEditar').forEach(btn => {
             btn.addEventListener('click', function() {
-                const index = this.getAttribute('data-index');
-                abrirModalEditar(index);
+                const id = this.getAttribute('data-id');
+                abrirModalEditar(id);
             });
         });
         
         document.querySelectorAll('.btnEliminar').forEach(btn => {
             btn.addEventListener('click', function() {
-                const index = this.getAttribute('data-index');
-                eliminarUsuario(index);
+                const id = this.getAttribute('data-id');
+                eliminarUsuario(id);
             });
         });
     }
 
-    function eliminarUsuario(index) {
+    async function eliminarUsuario(id) {
         if (confirm('¿Está seguro de eliminar este usuario?')) {
-            let usuarios = obtenerUsuarios();
-            const usuarioEliminado = usuarios[index];
-            usuarios.splice(index, 1);
-            guardarUsuarios(usuarios);
-            
-            const tipo = document.getElementById('tipoBusqueda').value;
-            const valor = document.getElementById('valorBusqueda').value;
-            
-            if (tipo && valor) {
-                const resultados = buscarUsuarios(tipo, valor);
-                mostrarResultados(resultados);
-            } else {
-                mostrarResultados(obtenerUsuarios());
+            try {
+                const usuario = await UsuariosAPI.obtenerPorId(id);
+                await UsuariosAPI.eliminar(id);
+                
+                // Volver a realizar la búsqueda actual
+                const tipo = document.getElementById('tipoBusqueda').value;
+                const valor = document.getElementById('valorBusqueda').value;
+                
+                if (tipo && valor) {
+                    const resultados = await UsuariosAPI.buscar(tipo, valor);
+                    mostrarResultados(resultados);
+                } else {
+                    const usuarios = await UsuariosAPI.obtenerTodos();
+                    mostrarResultados(usuarios);
+                }
+                
+                alert(`✅ Usuario ${usuario.nombre} ${usuario.apellido} eliminado exitosamente`);
+            } catch (error) {
+                console.error('Error al eliminar usuario:', error);
+                alert('❌ Error al eliminar el usuario. Por favor, intente nuevamente.');
             }
-            
-            alert(`✅ Usuario ${usuarioEliminado.nombre} ${usuarioEliminado.apellido} eliminado exitosamente`);
         }
     }
 
-    function abrirModalEditar(index) {
-        const usuarios = obtenerUsuarios();
-        const usuario = usuarios[index];
-        
-        const modal = document.getElementById('modalEditar');
-        if (!modal) return;
-        
-        document.getElementById('editIndex').value = index;
-        document.getElementById('editCedula').value = usuario.cedula;
-        document.getElementById('editNombre').value = usuario.nombre;
-        document.getElementById('editApellido').value = usuario.apellido;
-        document.getElementById('editEmail').value = usuario.email;
-        document.getElementById('editFecha').value = usuario.fecha || '';
-        document.getElementById('editTelefono').value = usuario.telefono;
-        document.getElementById('editGenero').value = usuario.genero;
-        document.getElementById('editRol').value = usuario.rol;
-        
-        modal.style.display = 'block';
+    async function abrirModalEditar(id) {
+        try {
+            const usuario = await UsuariosAPI.obtenerPorId(id);
+            
+            const modal = document.getElementById('modalEditar');
+            if (!modal) return;
+            
+            document.getElementById('editIndex').value = id;
+            document.getElementById('editCedula').value = usuario.cedula;
+            document.getElementById('editNombre').value = usuario.nombre;
+            document.getElementById('editApellido').value = usuario.apellido;
+            document.getElementById('editEmail').value = usuario.email;
+            document.getElementById('editFecha').value = usuario.fecha || '';
+            document.getElementById('editTelefono').value = usuario.telefono;
+            document.getElementById('editGenero').value = usuario.genero;
+            document.getElementById('editRol').value = usuario.rol;
+            
+            modal.style.display = 'block';
+        } catch (error) {
+            console.error('Error al cargar usuario:', error);
+            alert('❌ Error al cargar el usuario. Por favor, intente nuevamente.');
+        }
     }
 
     function cerrarModal() {
@@ -147,7 +118,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const formBuscar = document.getElementById('formBuscar');
     if (formBuscar) {
-        formBuscar.addEventListener('submit', function(e) {
+        formBuscar.addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const tipo = document.getElementById('tipoBusqueda').value;
@@ -163,8 +134,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
-            const resultados = buscarUsuarios(tipo, valor);
-            mostrarResultados(resultados);
+            try {
+                const resultados = await UsuariosAPI.buscar(tipo, valor);
+                mostrarResultados(resultados);
+            } catch (error) {
+                console.error('Error al buscar usuarios:', error);
+                alert('❌ Error al buscar usuarios. Por favor, intente nuevamente.');
+            }
         });
     }
 
@@ -180,21 +156,25 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const btnMostrarTodos = document.getElementById('btnMostrarTodos');
     if (btnMostrarTodos) {
-        btnMostrarTodos.addEventListener('click', function() {
-            const usuarios = obtenerUsuarios();
-            mostrarResultados(usuarios);
+        btnMostrarTodos.addEventListener('click', async function() {
+            try {
+                const usuarios = await UsuariosAPI.obtenerTodos();
+                mostrarResultados(usuarios);
+            } catch (error) {
+                console.error('Error al obtener todos los usuarios:', error);
+                alert('❌ Error al cargar los usuarios. Por favor, intente nuevamente.');
+            }
         });
     }
 
     const formEditar = document.getElementById('formEditar');
     if (formEditar) {
-        formEditar.addEventListener('submit', function(e) {
+        formEditar.addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const index = document.getElementById('editIndex').value;
-            let usuarios = obtenerUsuarios();
+            const id = document.getElementById('editIndex').value;
             
-            usuarios[index] = {
+            const usuarioActualizado = {
                 cedula: document.getElementById('editCedula').value,
                 nombre: document.getElementById('editNombre').value,
                 apellido: document.getElementById('editApellido').value,
@@ -205,18 +185,24 @@ document.addEventListener('DOMContentLoaded', function() {
                 rol: document.getElementById('editRol').value
             };
             
-            guardarUsuarios(usuarios);
-            cerrarModal();
-            
-            const tipo = document.getElementById('tipoBusqueda').value;
-            const valor = document.getElementById('valorBusqueda').value;
-            
-            if (tipo && valor) {
-                const resultados = buscarUsuarios(tipo, valor);
-                mostrarResultados(resultados);
+            try {
+                await UsuariosAPI.actualizar(id, usuarioActualizado);
+                cerrarModal();
+                
+                // Volver a realizar la búsqueda actual
+                const tipo = document.getElementById('tipoBusqueda').value;
+                const valor = document.getElementById('valorBusqueda').value;
+                
+                if (tipo && valor) {
+                    const resultados = await UsuariosAPI.buscar(tipo, valor);
+                    mostrarResultados(resultados);
+                }
+                
+                alert('✅ Usuario actualizado exitosamente');
+            } catch (error) {
+                console.error('Error al actualizar usuario:', error);
+                alert('❌ Error al actualizar el usuario. Por favor, intente nuevamente.');
             }
-            
-            alert('✅ Usuario actualizado exitosamente');
         });
     }
 
