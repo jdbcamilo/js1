@@ -1,5 +1,5 @@
 // Configuración de MockAPI
-const API_BASE_URL = 'https://673609c75995834c8a931e38.mockapi.io/api/v1';
+const API_BASE_URL = 'https://6937a8bc4618a71d77cd2acc.mockapi.io/apio/v1';
 const USUARIOS_ENDPOINT = '/usuarios';
 
 // Servicio API para gestión de usuarios
